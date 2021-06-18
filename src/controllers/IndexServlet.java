@@ -11,8 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import models.Message;
+import models.Task;
 import utils.DBUtil;
+
 
 /**
  * Servlet implementation class IndexServlet
@@ -26,7 +27,6 @@ public class IndexServlet extends HttpServlet {
      */
     public IndexServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -41,7 +41,7 @@ public class IndexServlet extends HttpServlet {
         } catch(NumberFormatException e) {}
 
         // 最大件数と開始位置を指定してメッセージを取得
-        List<Message> messages = em.createNamedQuery("getAllMessages", Message.class)
+        List<Task> messages = em.createNamedQuery("getAllMessages", Task.class)
                                    .setFirstResult(15 * (page - 1))
                                    .setMaxResults(15)
                                    .getResultList();
@@ -54,15 +54,22 @@ public class IndexServlet extends HttpServlet {
 
         request.setAttribute("messages", messages);
         request.setAttribute("messages_count", messages_count);     // 全件数
-        request.setAttribute("page", page);                         // ページ数
+        request.setAttribute("page", page);
 
+        request.setAttribute("messages", messages);
+
+        // フラッシュメッセージがセッションスコープにセットされていたら
         if(request.getSession().getAttribute("flush") != null) {
             // セッションスコープ内のフラッシュメッセージをリクエストスコープに保存し、セッションスコープからは削除する
             request.setAttribute("flush", request.getSession().getAttribute("flush"));
             request.getSession().removeAttribute("flush");
         }
 
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/messages/index.jsp");
+        RequestDispatcher rd = request.getRequestDispatcher(
+        "/WEB-INF/views/messages/index.jsp");
+
         rd.forward(request, response);
+
     }
+
 }
